@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/model/burger_model.dart';
 import 'package:food_delivery_app/model/category_model.dart';
+import 'package:food_delivery_app/model/pizza_model.dart';
+import 'package:food_delivery_app/pages/detail_page.dart';
+import 'package:food_delivery_app/services/burger_data.dart';
 import 'package:food_delivery_app/services/category_data.dart';
+import 'package:food_delivery_app/services/pizza_data.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 
 class Home extends StatefulWidget {
@@ -12,10 +17,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<CategoryModel> categories = [];
-
+  List<PizzaModel> pizza = [];
+  List<BurgerModel> burger = [];
+  String track = "0";
   @override
   void initState() {
     categories = getCategories();
+    pizza = getPizza();
+    burger = getBurger();
     super.initState();
   }
 
@@ -23,7 +32,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: EdgeInsets.only(left: 20.0, top: 40.0),
+        margin: EdgeInsets.only(left: 15.0, top: 40.0),
         child: Column(
           children: [
             Row(
@@ -91,56 +100,170 @@ class _HomeState extends State<Home> {
             ),
             SizedBox(height: 20.0),
             SizedBox(
-              height: 60.0,
+              height: 70.0,
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
-                  return CategoryTile(
-                    image: categories[index].image!,
-                    name: categories[index].name!,
+                  return categoryTile(
+                    categories[index].image!,
+                    categories[index].name!,
+                    index.toString(),
                   );
                 },
               ),
             ),
+            SizedBox(height: 10.0),
+            track == "0"
+                ? Expanded(
+                    child: GridView.builder(
+                      padding: EdgeInsets.zero,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.65,
+                        mainAxisSpacing: 20.0,
+                        crossAxisSpacing: 15.0,
+                      ),
+                      itemCount: pizza.length,
+                      itemBuilder: (context, index) {
+                        return foodTile(
+                          pizza[index].image!,
+                          pizza[index].name!,
+                          pizza[index].price!,
+                        );
+                      },
+                    ),
+                  )
+                : track == "1"
+                ? Expanded(
+                    child: GridView.builder(
+                      padding: EdgeInsets.zero,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.65,
+                        mainAxisSpacing: 20.0,
+                        crossAxisSpacing: 15.0,
+                      ),
+                      itemCount: burger.length,
+                      itemBuilder: (context, index) {
+                        return foodTile(
+                          burger[index].image!,
+                          burger[index].name!,
+                          burger[index].price!,
+                        );
+                      },
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),
     );
   }
-}
 
-class CategoryTile extends StatefulWidget {
-  String name, image;
-  CategoryTile({super.key, required this.image, required this.name,required this.categoryindex});
-
-  @override
-  State<CategoryTile> createState() => _CategoryTileState();
-}
-
-class _CategoryTileState extends State<CategoryTile> {
-  @override
-  Widget build(BuildContext context) {
+  Widget foodTile(String image, String name, String price) {
     return Container(
-      margin: EdgeInsets.only(right: 20.0),
-      padding: EdgeInsets.only(left: 20.0, right: 20.0),
+      padding: EdgeInsets.only(left: 10.0, top: 10.0),
+      margin: EdgeInsets.only(right: 10.0),
       decoration: BoxDecoration(
-        color: Color(0xffef2b39),
-        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(
-            widget.image,
-            height: 40.0,
-            width: 40.0,
-            fit: BoxFit.cover,
+          Image.asset(image, height: 150.0, width: 150.0, fit: BoxFit.contain),
+          Text(name, style: AppWidget.boldTextFieldStyle()),
+          Text('\u20B9$price', style: AppWidget.priceTextFieldStyle()),
+          Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DetailPage()),
+                  );
+                },
+                child: Container(
+                  height: 50.0,
+                  width: 80.0,
+                  decoration: BoxDecoration(
+                    color: Color(0xffef2b39),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                    size: 30.0,
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: 10.0),
-          Text(widget.name, style: AppWidget.whiteTextFieldStyle()),
         ],
       ),
+    );
+  }
+
+  Widget categoryTile(String image, String name, String categoryindex) {
+    return GestureDetector(
+      onTap: () {
+        track = categoryindex.toString();
+        setState(() {});
+      },
+      child: track == categoryindex
+          ? Container(
+              margin: EdgeInsets.only(right: 20.0, bottom: 10.0),
+              child: Material(
+                elevation: 3.0,
+                borderRadius: BorderRadius.circular(30),
+                child: Container(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  decoration: BoxDecoration(
+                    color: Color(0xffef2b39),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        image,
+                        height: 40.0,
+                        width: 40.0,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(width: 10.0),
+                      Text(name, style: AppWidget.whiteTextFieldStyle()),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          : Container(
+              margin: EdgeInsets.only(right: 20.0, bottom: 10.0),
+              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+              decoration: BoxDecoration(
+                color: Color(0xffececf8),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Row(
+                children: [
+                  Image.asset(
+                    image,
+                    height: 40.0,
+                    width: 40.0,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(width: 10.0),
+                  Text(name, style: AppWidget.simpleTextFieldStyle()),
+                ],
+              ),
+            ),
     );
   }
 }
