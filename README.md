@@ -8,8 +8,7 @@ This project was inspired by Shivam Gupta’s tutorial, with custom enhancements
 ## 🚀 Features
 
 - 🔐 User Authentication (Firebase Auth)
-- 🏬 Browse Restaurants & Food Items
-- 🛒 Add to Cart Functionality
+- 🏬 Browse Food Items
 - 💳 Secure Payment Integration using Razorpay
 - ☁️ Real-time Data Storage with Firebase Firestore
 - 📦 Order Placement & Order History
