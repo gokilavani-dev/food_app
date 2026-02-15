@@ -131,6 +131,7 @@ class _HomeState extends State<Home> {
                           pizza[index].image!,
                           pizza[index].name!,
                           pizza[index].price!,
+                          pizza[index].description!,
                         );
                       },
                     ),
@@ -151,6 +152,7 @@ class _HomeState extends State<Home> {
                           burger[index].image!,
                           burger[index].name!,
                           burger[index].price!,
+                          burger[index].description!,
                         );
                       },
                     ),
@@ -162,7 +164,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget foodTile(String image, String name, String price) {
+  Widget foodTile(String image, String name, String price, String description) {
     return Container(
       padding: EdgeInsets.only(left: 10.0, top: 10.0),
       margin: EdgeInsets.only(right: 10.0),
@@ -184,7 +186,14 @@ class _HomeState extends State<Home> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DetailPage()),
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        image: image,
+                        name: name,
+                        price: price,
+                        description: description,
+                      ),
+                    ),
                   );
                 },
                 child: Container(
