@@ -46,3 +46,4 @@ app.*.map.json
 
 razorpaykeys.txt
 lib/services/constant.dart
+/android/app/google-services.json
