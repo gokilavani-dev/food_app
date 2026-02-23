@@ -6,6 +6,7 @@ import 'package:food_delivery_app/pages/detail_page.dart';
 import 'package:food_delivery_app/services/burger_data.dart';
 import 'package:food_delivery_app/services/category_data.dart';
 import 'package:food_delivery_app/services/pizza_data.dart';
+import 'package:food_delivery_app/services/upload_data.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 
 class Home extends StatefulWidget {
@@ -31,6 +32,13 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(Icons.upload),
+      //   onPressed: () async {
+      //     await UploadData().uploadFoodItems();
+      //     print("✅ Upload Done!");
+      //   },
+      // ),
       body: Container(
         margin: EdgeInsets.only(left: 15.0, top: 40.0),
         child: Column(

@@ -4,6 +4,7 @@ import 'package:food_delivery_app/services/constant.dart';
 import 'package:food_delivery_app/services/database.dart';
 import 'package:food_delivery_app/services/shared_pref.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
+import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class Wallet extends StatefulWidget {
@@ -27,12 +28,69 @@ class _WalletState extends State<Wallet> {
   }
 
   getuserwallet() async {
-    await getthesharedpref();
-    QuerySnapshot querySnapshot = await DatabaseMethods().getUserWalletByEmail(
-      email!,
+    email = await SharedPreferencesHelper().getUserEmail();
+    id = await SharedPreferencesHelper().getUserId();
+
+    walletStream = await DatabaseMethods().getUserTransactions(id!);
+
+    if (email == null) return;
+
+    var snap = await DatabaseMethods().getUserWalletByEmail(email!);
+
+    if (snap.docs.isNotEmpty) {
+      wallet = snap.docs.first["Wallet"].toString();
+      setState(() {});
+    }
+  }
+
+  Stream? walletStream;
+
+  Widget allTransactions() {
+    return StreamBuilder(
+      stream: walletStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  return Container(
+                    padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFececf8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          ds["Date"],
+                          style: AppWidget.headlineTextFieldStyle(),
+                        ),
+                        SizedBox(width: 20.0),
+                        Column(
+                          children: [
+                            Text("Amount added to wallet"),
+                            Text(
+                              "\u20B9${ds["Amount"]}",
+                              style: TextStyle(
+                                color: Color(0xffef2b39),
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              )
+            : Container();
+      },
     );
-    wallet = "${querySnapshot.docs[0]["Wallet"]}";
-    setState(() {});
   }
 
   @override
@@ -215,6 +273,33 @@ class _WalletState extends State<Wallet> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 20),
+                    Expanded(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(height: 10.0),
+                            Text(
+                              "Your Transactins",
+                              style: AppWidget.boldTextFieldStyle(),
+                            ),
+                            SizedBox(height: 20),
+                            Container(
+                              height: MediaQuery.of(context).size.height / 2.84,
+                              child: allTransactions(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -254,6 +339,15 @@ class _WalletState extends State<Wallet> {
     int updatedWallet = currentWallet + addedMoney;
 
     await DatabaseMethods().updateUserWallet(updatedWallet.toString(), id!);
+
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat("dd MMM").format(now);
+
+    Map<String, dynamic> userTransaction = {
+      "Amount": selectedAmount,
+      "Date": formattedDate,
+    };
+    await DatabaseMethods().addUserTransactions(userTransaction, id!);
 
     // ✅ Clear after success
     amountController.clear();

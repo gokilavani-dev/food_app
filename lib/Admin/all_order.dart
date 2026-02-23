@@ -182,6 +182,36 @@ class _AllOrderState extends State<AllOrder> {
                                           color: Color(0xffef2b39),
                                         ),
                                       ),
+                                      SizedBox(height: 5.0),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await DatabaseMethods()
+                                              .updateAdminOrders(ds.id);
+                                          await DatabaseMethods()
+                                              .updateUserOrders(
+                                                ds["Id"],
+                                                ds.id,
+                                              );
+                                        },
+                                        child: Container(
+                                          width: 100,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "Delivered",
+                                              style:
+                                                  AppWidget.whiteTextFieldStyle(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10.0),
                                     ],
                                   ),
                                 ),

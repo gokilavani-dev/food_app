@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/pages/bottom_nav.dart';
 import 'package:food_delivery_app/pages/signup.dart';
+import 'package:food_delivery_app/services/shared_pref.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 
 class Login extends StatefulWidget {
@@ -16,13 +18,31 @@ class _LoginState extends State<Login> {
 
   TextEditingController passwordController = new TextEditingController();
   TextEditingController mailController = new TextEditingController();
-
   userLogin() async {
     try {
+      // ✅ Step 1: Firebase Login
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // ✅ Step 2: Firestoreல இருந்து Random ID fetch
+      QuerySnapshot snap = await FirebaseFirestore.instance
+          .collection("users")
+          .where("Email", isEqualTo: email.trim())
+          .get();
+
+      if (snap.docs.isNotEmpty) {
+        String randomId = snap.docs.first["Id"];
+
+        // ✅ Step 3: SharedPreferences Save
+        await SharedPreferencesHelper().saveUserId(randomId);
+        await SharedPreferencesHelper().saveUserEmail(email.trim());
+
+        print("Login Success - Random ID Saved: $randomId");
+      }
+
+      // ✅ Step 4: Navigate
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => BottomNav()),

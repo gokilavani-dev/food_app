@@ -20,9 +20,12 @@ class _OrderState extends State<Order> {
   }
 
   getontheload() async {
-    await getthesharedpref();
-    orderStream = await DatabaseMethods().getUserOrders(id!);
-    setState(() {});
+    id = await SharedPreferencesHelper().getUserId();
+
+    if (id != null && id!.isNotEmpty) {
+      orderStream = await DatabaseMethods().getUserOrders(id!);
+      setState(() {});
+    }
   }
 
   Stream? orderStream;

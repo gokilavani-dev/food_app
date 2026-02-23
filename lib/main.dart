@@ -2,6 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/Admin/admin_login.dart';
 import 'package:food_delivery_app/Admin/all_order.dart';
+import 'package:food_delivery_app/Admin/home_admin.dart';
+import 'package:food_delivery_app/Admin/manage_users.dart';
+import 'package:food_delivery_app/pages/bottom_nav.dart';
 import 'package:food_delivery_app/pages/login.dart';
 
 void main() async {
@@ -37,7 +40,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: AllOrder(),
+      home: Login(),
     );
   }
 }

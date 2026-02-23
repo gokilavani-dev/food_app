@@ -59,4 +59,49 @@ class DatabaseMethods {
         .where("Status", isEqualTo: "Pending")
         .snapshots();
   }
+
+  Future updateAdminOrders(String id) async {
+    return await FirebaseFirestore.instance.collection("Orders").doc(id).update(
+      {"Status": "Delivered"},
+    );
+  }
+
+  Future updateUserOrders(String userid, String docid) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .collection("Orders")
+        .doc(docid)
+        .update({"Status": "Delivered"});
+  }
+
+  Future<Stream<QuerySnapshot>> getAllUsers() async {
+    return await FirebaseFirestore.instance.collection("users").snapshots();
+  }
+
+  Future deleteUsers(String id) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .delete();
+  }
+
+  Future addUserTransactions(
+    Map<String, dynamic> userOrderMap,
+    String id,
+  ) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .collection("Transaction")
+        .add(userOrderMap);
+  }
+
+  Future<Stream<QuerySnapshot>> getUserTransactions(String id) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .collection("Transaction")
+        .snapshots();
+  }
 }
